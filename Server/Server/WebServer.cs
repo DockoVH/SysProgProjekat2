@@ -41,27 +41,22 @@ internal class WebServer
         {
             HttpListenerContext context = await listener.GetContextAsync();
             await semafor.WaitAsync();
-            _ = ObradiZahtevAsync(context);
+            try
+            {
+                await ObradiZahtevAsync(context);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Greška: ${ex.Message}");
+            }
+            finally
+            {
+                semafor.Release();
+            }
         }
     }
 
     private async Task ObradiZahtevAsync(HttpListenerContext context)
-    {
-        try
-        {
-            await ObradiZahtevPomAsync(context);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Greška: ${ex.Message}");
-        }
-        finally
-        {
-            semafor.Release();
-        }
-    }
-
-    private async Task ObradiZahtevPomAsync(HttpListenerContext context)
     {
         HttpListenerRequest request = context.Request;
         HttpListenerResponse response = context.Response;
